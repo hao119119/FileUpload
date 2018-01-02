@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<link rel="stylesheet" th:href="@{/css/file.css}"/>
+<meta charset="UTF-8"/>
+<title>列表页</title>
+</head>
+<body>
+	<div class="box">
+		<p>id：<span th:text="${fileEntity.id}"/></p>
+		<p>名称：<a th:href="${fileEntity.filepath}"><span th:text="${fileEntity.fileName}"/></a> </p>
+		<p>大小：<span th:text="${fileEntity.fileSize}"/></p>
+		<p>描述 ：<span th:text="${fileEntity.describe}"/></p>
+		
+	</div>
+</body>
+</html>

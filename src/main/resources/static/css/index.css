@@ -1,0 +1,47 @@
+*{margin: 0;padding: 0}
+.box{
+	width: 50%;
+	margin: 100px auto;
+	text-align: center;
+	box-shadow: 2px 2px 5px #000;
+	padding: 20px;	
+}
+.box h1{
+	text-shadow: 1px 1px 2px #666;
+	border-bottom: 2px dashed #5f543a;
+	margin-bottom: 20px;
+}
+.box .file{
+	display: none;
+}
+.box a{
+	text-decoration: none;
+	background-color: #5f96c5;
+	box-shadow: 1px 1px 5px #000;
+	color: white;
+	padding:5px 8px;
+}
+.box a:hover{
+	padding: 6px;
+}
+.box .fileList{
+	margin-top: 20px;
+}
+.box .fileList ul{
+	 list-style: none;
+	 border-bottom: 1px solid rgba(102,102,102,0.69);
+}
+.box .fileList ul:after{
+	clear: both;
+	content:"";
+	display: block;
+}
+/**
+	隔行变色
+*/
+.box .fileList ul:nth-child(odd){
+	background: #f7f7f7;
+}
+.box .fileList ul li{
+	 float: left;
+}
