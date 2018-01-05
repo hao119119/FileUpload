@@ -1,7 +1,6 @@
 package com.example.service;
 
 import com.example.entity.FileEntity;
-import com.example.util.FileUoloadUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by chenhaorj on 2017/11/14.
@@ -149,5 +150,23 @@ public class HBaseDownloader {
                 e.printStackTrace();
             }
         }
+    }
+    /**
+     * 根据rowkey删除
+     * @param id
+     * @throws IOException
+     */
+    public boolean  deleteById(String id){
+        try {
+            Table table = connection.getTable(TableName.valueOf("i3"));
+            Delete delete = new Delete(id.getBytes());
+            List<Delete> list = new ArrayList<Delete>();
+            list.add(delete);
+            table.delete(list);
+        }catch (IOException e){
+            e.printStackTrace();
+            return false;
+        }
+        return  true;
     }
 }

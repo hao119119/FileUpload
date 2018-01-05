@@ -3,6 +3,8 @@ package com.example.controller;
 import com.example.entity.FileEntity;
 import com.example.service.HBaseDownloader;
 import com.example.util.ZipUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +24,7 @@ import java.util.zip.ZipOutputStream;
 @SuppressWarnings("all")
 @Controller
 public class FileDownloadController {
+	private Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 	@Autowired
 	private HBaseDownloader hbaesDownloader;
 
@@ -71,6 +75,18 @@ public class FileDownloadController {
 		}finally{
 			out.close();
 		}
+	}
+	/**
+	 * 根据rowkey删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/delete/{id}", method= RequestMethod.GET)
+	@ResponseBody
+	public boolean deleteByRowkey(@PathVariable String id){
+		boolean flag = hbaesDownloader.deleteById(id);
+		logger.debug("传入的rowkey："+id);
+		return flag;
 	}
 
 }
