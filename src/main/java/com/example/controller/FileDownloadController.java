@@ -2,8 +2,7 @@ package com.example.controller;
 
 import com.example.entity.FileEntity;
 import com.example.service.HBaseDownloader;
-import com.example.service.HBaseUploader;
-import com.example.util.FileUoloadUtil;
+import com.example.util.ZipUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,15 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 @SuppressWarnings("all")
 @Controller
@@ -53,5 +47,22 @@ public class FileDownloadController {
 		return new ResponseEntity<byte[]>(null, new HttpHeaders(), HttpStatus.NOT_FOUND);
 
 	}
-
+	/**
+	 * 打包压缩下载文件
+	 */
+	@RequestMapping(value = "/downLoadZipFile")
+	public void downLoadZipFile(HttpServletResponse response) throws IOException{
+		String zipName = "file.zip";
+		response.setContentType("APPLICATION/OCTET-STREAM");
+		response.setHeader("Content-Disposition","attachment; filename="+zipName);
+		ZipOutputStream out = new ZipOutputStream(response.getOutputStream());
+		try {
+			ZipUtils.doCompress("c:\\Users\\Administrator\\AppData\\Local\\Temp\\tomcat-docbase.5104014158022934838.8080\\upload\\", out);
+			response.flushBuffer();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			out.close();
+		}
+	}
 }
