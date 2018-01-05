@@ -51,8 +51,8 @@ public class FileDownloadController {
 	/**
 	 * 打包压缩下载文件
 	 */
-	@RequestMapping(value = "/downLoadZipFile")
-	public void downLoadZipFile(HttpServletResponse response, HttpServletRequest request,String startKey,String endKey) throws IOException{
+	@RequestMapping(value = "/downLoadZipFile/{startKey}/{endKey}")
+	public void downLoadZipFile(HttpServletResponse response, HttpServletRequest request,@PathVariable String startKey,@PathVariable String endKey) throws IOException{
 		String zipName = "file.zip";
 		response.setContentType("APPLICATION/OCTET-STREAM");
 		response.setHeader("Content-Disposition","attachment; filename="+zipName);
@@ -72,4 +72,5 @@ public class FileDownloadController {
 			out.close();
 		}
 	}
+
 }
