@@ -3,15 +3,14 @@ package com.example.service;
 import com.example.entity.FileEntity;
 import com.example.util.FileUoloadUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.CellUtil;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -84,5 +83,71 @@ public class HBaseDownloader {
         }
         return fileEntity;
 
+    }
+
+    /**
+     * 拷贝Hbase文件到临时目录
+     * @param filePath
+     * @param startKey
+     * @param endKey
+     * @return
+     */
+    public Boolean DownloadPath(String filePath,String startKey,String endKey){
+        Boolean flag = false;
+        HTable hTable = null;
+        ResultScanner rs = null;
+        try{
+            hTable = new HTable(configuration,TableName.valueOf("i3"));
+            Scan scan = new Scan();
+            scan.setStartRow(startKey.getBytes());
+            scan.setStopRow(endKey.getBytes());
+            rs = hTable.getScanner(scan);
+            if(null!=rs && !"".equals(rs)){
+                for (Result result : rs) {
+                    for (KeyValue kv : result.raw()) {
+                        String key = new String(kv.getKey(), "UTF-8");
+                        log.debug("当前的key：" + key);
+                        if(null!=null&&"".equals(key)){
+                            writeFile(filePath, getFileEntity(key).getFileName(), getFile(key));
+                            flag = true;
+                        }
+                    }
+                }
+                log.debug("开始的rowkey" + startKey + "------------" + "结束的key" + endKey);
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return  flag;
+    }
+
+    /**
+     * 将文件写入临时目录
+     * @param filePath
+     * @param bytes
+     * @return
+     */
+    public void writeFile(String filePath,String fileName,byte[] bytes){
+        FileOutputStream outputStream =null;
+        log.info("文件缓存路径"+filePath);
+        try{
+            File file = new File(filePath);
+            if(!file.exists()){
+                file.mkdir();
+            }
+            File f = new File(filePath+fileName);
+            outputStream = new FileOutputStream(f);
+            outputStream.write(bytes,0,bytes.length);
+        }
+        catch(IOException e){
+            log.error("文件写入临时目录失败");
+            e.printStackTrace();
+        }finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

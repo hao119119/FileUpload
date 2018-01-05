@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
@@ -51,13 +52,19 @@ public class FileDownloadController {
 	 * 打包压缩下载文件
 	 */
 	@RequestMapping(value = "/downLoadZipFile")
-	public void downLoadZipFile(HttpServletResponse response) throws IOException{
+	public void downLoadZipFile(HttpServletResponse response, HttpServletRequest request,String startKey,String endKey) throws IOException{
 		String zipName = "file.zip";
 		response.setContentType("APPLICATION/OCTET-STREAM");
 		response.setHeader("Content-Disposition","attachment; filename="+zipName);
 		ZipOutputStream out = new ZipOutputStream(response.getOutputStream());
+        String downloadPath = request.getSession().getServletContext().getRealPath("/file/");
 		try {
-			ZipUtils.doCompress("c:\\Users\\Administrator\\AppData\\Local\\Temp\\tomcat-docbase.5104014158022934838.8080\\upload\\", out);
+            boolean flag = hbaesDownloader.DownloadPath(downloadPath,startKey,endKey);
+            if(flag==true){
+                ZipUtils.doCompress(downloadPath, out);
+            }else{
+                response.getWriter().print("下载错误");
+            }
 			response.flushBuffer();
 		} catch (Exception e) {
 			e.printStackTrace();
