@@ -97,6 +97,8 @@ public class HBaseDownloader {
         Boolean flag = false;
         HTable hTable = null;
         ResultScanner rs = null;
+        String name = "" ;
+        byte[] b = null;
         try{
             hTable = new HTable(configuration,TableName.valueOf("i3"));
             Scan scan = new Scan();
@@ -105,16 +107,24 @@ public class HBaseDownloader {
             rs = hTable.getScanner(scan);
             if(null!=rs && !"".equals(rs)){
                 for (Result result : rs) {
-                    for (KeyValue kv : result.raw()) {
-                        String key = new String(kv.getKey(), "UTF-8");
-                        log.debug("当前的key：" + key);
-                        if(null!=null&&"".equals(key)){
-                            writeFile(filePath, getFileEntity(key).getFileName(), getFile(key));
-                            flag = true;
+                    for (Cell kv : result.rawCells()) {
+                        String family;
+                        family = new String(CellUtil.cloneFamily(kv));
+                        String qualifier;
+                        qualifier = new String(CellUtil.cloneQualifier(kv));
+                        if("info".equals(family)){
+                            if("fileName".equals(qualifier)){
+                                name = new String(CellUtil.cloneValue(kv));
+                            }
+                            if("file".equals(qualifier)){
+                                b =  CellUtil.cloneValue(kv);
+                            }
                         }
                     }
+                    log.debug("开始的rowkey" + startKey + "------------" + "结束的key" + endKey);
+                    writeFile(filePath, name, b);
+                    flag = true;
                 }
-                log.debug("开始的rowkey" + startKey + "------------" + "结束的key" + endKey);
             }
         }catch(IOException e){
             e.printStackTrace();

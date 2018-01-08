@@ -66,8 +66,6 @@ public class FileDownloadController {
             boolean flag = hbaesDownloader.DownloadPath(downloadPath,startKey,endKey);
             if(flag==true){
                 ZipUtils.doCompress(downloadPath, out);
-            }else{
-                response.getWriter().print("下载错误");
             }
 			response.flushBuffer();
 		} catch (Exception e) {
